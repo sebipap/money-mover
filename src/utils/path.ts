@@ -1,4 +1,4 @@
-import { WeightedGraph } from "./graph.js";
+import { WeightedGraph } from "./graph";
 import { platforms } from "./platforms";
 
 import { Node, Token } from "./types";

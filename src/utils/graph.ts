@@ -1,19 +1,20 @@
-//Dijkstra algorithm is used to find the shortest distance between two nodes inside a valid weighted graph. Often used in Google Maps, Network Router etc.
+class GraphNode {
+  val: any;
+  priority: number;
 
-//helper class for PriorityQueue
-class Node {
-  constructor(val, priority) {
+  constructor(val: any, priority: number) {
     this.val = val;
     this.priority = priority;
   }
 }
 
 export class PriorityQueue {
+  values: any;
   constructor() {
     this.values = [];
   }
-  enqueue(val, priority) {
-    const newNode = new Node(val, priority);
+  enqueue(val: any, priority: number) {
+    const newNode = new GraphNode(val, priority);
     this.values.push(newNode);
     this.bubbleUp();
   }
@@ -74,20 +75,21 @@ export class PriorityQueue {
 //Dijkstra's algorithm only works on a weighted graph.
 
 export class WeightedGraph {
+  adjacencyList: Record<any, any>;
   constructor() {
     this.adjacencyList = {};
   }
-  addVertex(vertex) {
+  addVertex(vertex: any) {
     if (!this.adjacencyList[vertex]) this.adjacencyList[vertex] = [];
   }
-  addEdge(vertex1, vertex2, weight) {
+  addEdge(vertex1: any, vertex2: any, weight: number) {
     (this.adjacencyList[vertex1] || []).push({ node: vertex2, weight });
     (this.adjacencyList[vertex2] || []).push({ node: vertex1, weight });
   }
-  Dijkstra(start, finish) {
+  Dijkstra(start: any, finish: any) {
     const nodes = new PriorityQueue();
-    const distances = {};
-    const previous = {};
+    const distances: Record<any, number> = {};
+    const previous: Record<any, any> = {};
     const path = []; //to return at end
     let smallest;
     //build up initial state
