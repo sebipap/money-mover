@@ -22,10 +22,31 @@ const areConnected = (node1: Node, node2: Node) => {
     return false;
   }
 
-  return (
-    (node1.network === node2.network && node1.token === node2.token) ||
-    node1.platform.name === node2.platform.name
-  );
+  // two nodes are connected when money can move from 1 to 2
+  const isTokenSwap = node1.platform.name === node2.platform.name;
+
+  if (isTokenSwap) {
+    return true;
+  }
+
+  const isSameToken = node1.token === node2.token;
+  const isSameNetwork = node1.network === node2.network;
+
+  if (isSameToken && isSameNetwork) {
+    // can send from one platform to another if the first has is as output and the second one as input
+
+    return (
+      node1.platform.outputs.some(
+        (output) =>
+          output.network === node2.network &&
+          output.tokens.includes(node2.token)
+      ) &&
+      node2.platform.inputs.some(
+        (input) =>
+          input.network === node1.network && input.tokens.includes(node1.token)
+      )
+    );
+  }
 };
 
 const nodeToString = (node: Node) => JSON.stringify(node);
@@ -67,7 +88,7 @@ export const shortestPath = (
 
   for (const node1 of [...nodes, startNode, endNode]) {
     graph.addVertex(nodeToString(node1));
-    for (const node2 of nodes) {
+    for (const node2 of [...nodes, startNode, endNode]) {
       if (areConnected(node1, node2)) {
         graph.addEdge(nodeToString(node1), nodeToString(node2), 1);
       }

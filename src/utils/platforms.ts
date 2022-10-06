@@ -143,11 +143,16 @@ const eurUsd: Conversion = {
 
 const fiatConversions: Conversion[] = [usdEur, eurUsd];
 
+const usBankTransfer: TransferMethod = {
+  network: "us bank transfer",
+  tokens: ["USD"],
+};
+
 const wise: Platform = {
   name: "Wise",
   conversions: [...fiatConversions],
-  inputs: [deelWiseTransferMethod],
-  outputs: [deelWiseTransferMethod],
+  inputs: [deelWiseTransferMethod, usBankTransfer],
+  outputs: [deelWiseTransferMethod, usBankTransfer],
 };
 
 const deelCoinbaseTransfer: TransferMethod = {
@@ -201,6 +206,13 @@ export const platformTokens = ({ conversions, inputs, outputs }: Platform) => {
   return [...new Set([...conversionTokens, ...inputTokens, ...outputTokens])];
 };
 
+const bankOfAmerica: Platform = {
+  name: "Bank of America",
+  conversions: [],
+  inputs: [usBankTransfer],
+  outputs: [usBankTransfer],
+};
+
 export const platforms = [
   bancoGalicia,
   paypal,
@@ -208,4 +220,5 @@ export const platforms = [
   wise,
   coinbase,
   deel,
+  bankOfAmerica,
 ];

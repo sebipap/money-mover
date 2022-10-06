@@ -26,16 +26,36 @@ const PlatformTokenInput = ({ fromToData, setFromToData }: Props) => {
   const toTokens = toPlatform ? platformTokens(toPlatform) : [];
 
   const handleFromPlatformChange = (platformName: string) => {
+    const platform: Platform | undefined = platforms.find(
+      (platform) => platform.name === platformName
+    );
+
+    if (!platform) return;
+
+    const newToken = platformTokens(platform).includes(fromToken)
+      ? fromToken
+      : platformTokens(platform)[0];
+
     setFromToData({
       ...fromToData,
-      from: { ...fromToData.from, platformName },
+      from: { token: newToken, platformName },
     });
   };
 
   const handleToPlatformChange = (platformName: string) => {
+    const platform: Platform | undefined = platforms.find(
+      (platform) => platform.name === platformName
+    );
+
+    if (!platform) return;
+
+    const newToken = platformTokens(platform).includes(fromToken)
+      ? fromToken
+      : platformTokens(platform)[0];
+
     setFromToData({
       ...fromToData,
-      to: { ...fromToData.to, platformName },
+      to: { token: newToken, platformName },
     });
   };
   const handleFromTokenChange = (token: Token) => {

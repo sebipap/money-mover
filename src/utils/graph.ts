@@ -84,7 +84,7 @@ export class WeightedGraph {
   }
   addEdge(vertex1: any, vertex2: any, weight: number) {
     (this.adjacencyList[vertex1] || []).push({ node: vertex2, weight });
-    (this.adjacencyList[vertex2] || []).push({ node: vertex1, weight });
+    // (this.adjacencyList[vertex2] || []).push({ node: vertex1, weight });
   }
   Dijkstra(start: any, finish: any) {
     const nodes = new PriorityQueue();

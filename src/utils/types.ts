@@ -28,7 +28,8 @@ export type Network =
   | "lemon"
   | "paypal"
   | "wise"
-  | "deelCoinbase";
+  | "deelCoinbase"
+  | "us bank transfer";
 
 export type TransferMethod = {
   network: Network;
