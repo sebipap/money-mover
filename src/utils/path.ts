@@ -1,21 +1,23 @@
 import { WeightedGraph } from "./graph";
 import { platforms } from "./platforms";
 
-import { Node, Token } from "./types";
+import { Node, Platform, Token } from "./types";
 
 const graph = new WeightedGraph();
 
-const nodes: Node[] = platforms.flatMap((platform) => {
-  const { inputs, outputs } = platform;
+const getNodesFromPlatforms = (platforms: Platform[]) => {
+  return platforms.flatMap((platform) => {
+    const { inputs, outputs } = platform;
 
-  return [...inputs, ...outputs].flatMap(({ network, tokens }) =>
-    tokens.map((token: Token) => ({
-      token: token,
-      network: network,
-      platform: platform,
-    }))
-  );
-});
+    return [...inputs, ...outputs].flatMap(({ network, tokens }) =>
+      tokens.map((token: Token) => ({
+        token: token,
+        network: network,
+        platform: platform,
+      }))
+    );
+  });
+};
 
 const areConnected = (node1: Node, node2: Node) => {
   if (node1 === node2) {
@@ -49,7 +51,20 @@ const areConnected = (node1: Node, node2: Node) => {
   }
 };
 
-const nodeToString = (node: Node) => JSON.stringify(node);
+const nodeToStringifiedNode = ({ network, platform, token }: Node) =>
+  [network || "null", platform.name, token].join(",");
+
+const stringifiedNodeToNode = (stringifiedNode: string) => {
+  const [network, platformName, token] = stringifiedNode.split(",");
+
+  const platform = platforms.find((platform) => (platform.name = platformName));
+
+  return {
+    network,
+    platform,
+    token,
+  } as Node;
+};
 
 type TokenNetworkPair = {
   token: Token;
@@ -58,13 +73,14 @@ type TokenNetworkPair = {
 
 export const shortestPath = (
   from: TokenNetworkPair,
-  to: TokenNetworkPair
+  to: TokenNetworkPair,
+  enabledPlatforms: Platform[]
 ): Node[] | null => {
-  const fromPlatform = platforms.find(
-    (platform) => platform.name === from.platformName
+  const fromPlatform = enabledPlatforms.find(
+    (platform) => platform?.name === from.platformName
   );
-  const toPlatform = platforms.find(
-    (platform) => platform.name === to.platformName
+  const toPlatform = enabledPlatforms.find(
+    (platform) => platform?.name === to.platformName
   );
 
   if (!fromPlatform || !toPlatform) {
@@ -83,14 +99,22 @@ export const shortestPath = (
     platform: toPlatform,
   };
 
-  const startNodeString = nodeToString(startNode);
-  const endNodeString = nodeToString(endNode);
+  const startNodeString = nodeToStringifiedNode(startNode);
+  const endNodeString = nodeToStringifiedNode(endNode);
+
+  const nodes = getNodesFromPlatforms(enabledPlatforms);
+
+  console.log(new Set([...nodes.map((node) => node.platform.name)]));
 
   for (const node1 of [...nodes, startNode, endNode]) {
-    graph.addVertex(nodeToString(node1));
+    graph.addVertex(nodeToStringifiedNode(node1));
     for (const node2 of [...nodes, startNode, endNode]) {
       if (areConnected(node1, node2)) {
-        graph.addEdge(nodeToString(node1), nodeToString(node2), 1);
+        graph.addEdge(
+          nodeToStringifiedNode(node1),
+          nodeToStringifiedNode(node2),
+          1
+        );
       }
     }
   }
@@ -100,7 +124,9 @@ export const shortestPath = (
     endNodeString
   );
 
+  console.log(stringifiedNodePath);
+
   return stringifiedNodePath.map((stringifiedNode: string) =>
-    JSON.parse(stringifiedNode)
+    stringifiedNodeToNode(stringifiedNode)
   );
 };

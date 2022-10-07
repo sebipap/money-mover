@@ -1,24 +1,29 @@
-import { platforms, platformTokens } from "./utils/platforms";
+import { platformTokens } from "./utils/platforms";
 import { FromToData, Platform, Token } from "./utils/types";
 
 type Props = {
   fromToData: FromToData;
   setFromToData: (fromToData: FromToData) => void;
+  enabledPlatforms: Platform[];
 };
 
-const PlatformTokenInput = ({ fromToData, setFromToData }: Props) => {
-  const platformNames = platforms.map((platform) => platform.name);
+const PlatformTokenInput = ({
+  fromToData,
+  setFromToData,
+  enabledPlatforms,
+}: Props) => {
+  const platformNames = enabledPlatforms.map((platform) => platform.name);
 
   const {
     from: { platformName: fromPlatformName, token: fromToken },
     to: { platformName: toPlatformName, token: toToken },
   } = fromToData;
 
-  const fromPlatform: Platform | undefined = platforms.find(
+  const fromPlatform: Platform | undefined = enabledPlatforms.find(
     (platform) => platform.name === fromPlatformName
   );
 
-  const toPlatform: Platform | undefined = platforms.find(
+  const toPlatform: Platform | undefined = enabledPlatforms.find(
     (platform) => platform.name === toPlatformName
   );
 
@@ -26,7 +31,7 @@ const PlatformTokenInput = ({ fromToData, setFromToData }: Props) => {
   const toTokens = toPlatform ? platformTokens(toPlatform) : [];
 
   const handleFromPlatformChange = (platformName: string) => {
-    const platform: Platform | undefined = platforms.find(
+    const platform: Platform | undefined = enabledPlatforms.find(
       (platform) => platform.name === platformName
     );
 
@@ -43,7 +48,7 @@ const PlatformTokenInput = ({ fromToData, setFromToData }: Props) => {
   };
 
   const handleToPlatformChange = (platformName: string) => {
-    const platform: Platform | undefined = platforms.find(
+    const platform: Platform | undefined = enabledPlatforms.find(
       (platform) => platform.name === platformName
     );
 
@@ -72,54 +77,54 @@ const PlatformTokenInput = ({ fromToData, setFromToData }: Props) => {
   };
 
   return (
-    <div className="App">
-      <div className="platforms">
-        <div>
-          <select
-            value={fromPlatformName}
-            onChange={(e) => handleFromPlatformChange(e.target.value)}
-          >
-            {platformNames.map((platformName) => (
-              <option key={platformName} value={platformName}>
-                {platformName}
-              </option>
-            ))}
-          </select>
-          <select
-            value={fromToken}
-            onChange={(e) => handleFromTokenChange(e.target.value as Token)}
-          >
-            {fromTokens.map((token) => (
-              <option key={token} value={token}>
-                {token}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <select
-            value={toPlatformName}
-            onChange={(e) => handleToPlatformChange(e.target.value)}
-          >
-            {platformNames.map((platformName) => (
-              <option key={platformName} value={platformName}>
-                {platformName}
-              </option>
-            ))}
-          </select>
-          {/* dropdown of tokens */}
-
-          <select
-            value={toToken}
-            onChange={(e) => handleToTokenChange(e.target.value as Token)}
-          >
-            {toTokens.map((token) => (
-              <option key={token} value={token}>
-                {token}
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="rounded p-5">
+      <div>
+        <select
+          value={fromPlatformName}
+          onChange={(e) => handleFromPlatformChange(e.target.value)}
+          className="select select-bordered w-full max-w-xs"
+        >
+          {platformNames.map((platformName) => (
+            <option key={platformName} value={platformName}>
+              {platformName}
+            </option>
+          ))}
+        </select>
+        <select
+          value={fromToken}
+          onChange={(e) => handleFromTokenChange(e.target.value as Token)}
+          className="select select-bordered w-full max-w-xs"
+        >
+          {fromTokens.map((token) => (
+            <option key={token} value={token}>
+              {token}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <select
+          value={toPlatformName}
+          onChange={(e) => handleToPlatformChange(e.target.value)}
+          className="select select-bordered w-full max-w-xs"
+        >
+          {platformNames.map((platformName) => (
+            <option key={platformName} value={platformName}>
+              {platformName}
+            </option>
+          ))}
+        </select>
+        <select
+          value={toToken}
+          onChange={(e) => handleToTokenChange(e.target.value as Token)}
+          className="select select-bordered w-full max-w-xs"
+        >
+          {toTokens.map((token) => (
+            <option key={token} value={token}>
+              {token}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );

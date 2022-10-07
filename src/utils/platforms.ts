@@ -39,8 +39,8 @@ const argentineBankStandardTransactionMethods: TransferMethod[] = [
   dollarTransactionArgentinaCash,
 ];
 
-const bancoGalicia: Platform = {
-  name: "Banco Galicia",
+const argentineBank: Platform = {
+  name: "Argentina Bank",
   conversions: [usdArsOfficial, arsUsdSolidario],
   inputs: argentineBankStandardTransactionMethods,
   outputs: argentineBankStandardTransactionMethods,
@@ -213,8 +213,8 @@ const bankOfAmerica: Platform = {
   outputs: [usBankTransfer],
 };
 
-export const platforms = [
-  bancoGalicia,
+export const platforms: Platform[] = [
+  argentineBank,
   paypal,
   lemonCash,
   wise,

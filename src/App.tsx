@@ -1,9 +1,10 @@
 import { useState } from "react";
 import PlatformTokenInput from "./PlatformTokenInput";
-import { getIntructions, getSteps } from "./utils";
-import { FromToData } from "./utils/types";
+import { getIntructions } from "./utils";
+import { FromToData, Platform } from "./utils/types";
 
 import "./App.css";
+import { platforms } from "./utils/platforms";
 
 const App = () => {
   const [fromToData, setFromToData] = useState<FromToData>({
@@ -17,27 +18,66 @@ const App = () => {
     },
   });
 
-  const steps = getSteps(fromToData);
-  const instructions = getIntructions(fromToData);
+  const [enabledPlatformNames, setEnabledPlatformNames] = useState<string[]>(
+    platforms.map((platform) => platform.name)
+  );
+
+  const enabledPlatforms = platforms.filter((platform, i) => {
+    console.log(platform);
+    return enabledPlatformNames.includes(platform.name);
+  });
+
+  const instructions = getIntructions(fromToData, enabledPlatforms);
 
   return (
-    <>
-      <PlatformTokenInput {...{ fromToData, setFromToData }} />
-      <div className="path">
-        {instructions.map((instruction, index) => (
-          <>
-            <div className="step">{steps?.[index].platform.name}</div>
-            <div className="transition">
-              <p>
-                {">>  "}
-                {instruction}
-                {"  >>"}
-              </p>
+    <div className="p-10">
+      <div className={"form-control w-96 border p-5 rounded border-slate-50"}>
+        {platforms.map((platform, index) => {
+          const checked = enabledPlatformNames.includes(platform.name);
+
+          return (
+            <div key={`${platform.name}-${index}`}>
+              <label className="label cursor-pointer">
+                <span className="label-text">{platform.name}</span>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => {
+                    if (checked) {
+                      setEnabledPlatformNames((prevEnabledPlatforms) =>
+                        prevEnabledPlatforms.filter(
+                          (platformName) => platformName !== platform.name
+                        )
+                      );
+                      return;
+                    }
+                    setEnabledPlatformNames((prevEnabledPlatforms) => [
+                      ...prevEnabledPlatforms,
+                      platform.name,
+                    ]);
+                  }}
+                  className="toggle toggle-accent"
+                />
+              </label>
             </div>
-          </>
-        ))}
+          );
+        })}
       </div>
-    </>
+      <PlatformTokenInput
+        {...{ fromToData, setFromToData, enabledPlatforms }}
+      />
+      <ul className="steps steps-vertical">
+        {instructions.map((instruction) => (
+          <li
+            data-content={instruction.includes("swap") ? "↺" : "→"}
+            className="step step-primary"
+          >
+            {instruction}
+          </li>
+        ))}
+      </ul>
+      {JSON.stringify(enabledPlatforms.map((ep) => ep.name))}
+    </div>
   );
 };
 
