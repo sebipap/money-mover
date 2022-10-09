@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import PlatformTokenInput from "./PlatformTokenInput";
-import { allInstructionsSets, getIntructions } from "./utils";
+import PlatformTokenInput from "./components/PlatformTokenInput";
+import { allInstructionsSets } from "./utils";
 import { FromToData } from "./utils/types";
 
 import "./App.css";
 import { getPlatforms } from "./utils/platforms";
+import { PlatformsModal } from "./components/PlatformsModal";
+import { Instructions } from "./components/Instructions";
 
 const App = () => {
   const defaultFromToData: FromToData = {
@@ -32,61 +34,24 @@ const App = () => {
   const instructionSets = allInstructionsSets(fromToData, enabledPlatforms);
 
   return (
-    <div className="p-10">
-      <div className={"form-control w-96 border p-5 rounded border-slate-50"}>
-        {getPlatforms().map((platform, index) => {
-          const checked = enabledPlatformNames.includes(platform.name);
-
-          return (
-            <div key={`${platform.name}-${index}`}>
-              <label className="label cursor-pointer">
-                <span className="label-text">{platform.name}</span>
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => {
-                    if (checked) {
-                      setEnabledPlatformNames((prevEnabledPlatforms) =>
-                        prevEnabledPlatforms.filter(
-                          (platformName) => platformName !== platform.name
-                        )
-                      );
-                    } else {
-                      setEnabledPlatformNames((prevEnabledPlatforms) => [
-                        ...prevEnabledPlatforms,
-                        platform.name,
-                      ]);
-                    }
-                  }}
-                  className="toggle toggle-accent"
-                />
-              </label>
-            </div>
-          );
-        })}
+    <div className="mx-44 mt-10">
+      <div className="flex gap-10">
+        <div className="flex rounded-lg p-5 gap-4 bg-violet-900 flex-1">
+          <PlatformTokenInput
+            fromToData={fromToData}
+            setFromToData={setFromToData}
+            enabledPlatformNames={enabledPlatformNames}
+          />
+        </div>
+        <div className="flex rounded-lg p-10 gap-4 bg-violet-900">
+          <PlatformsModal
+            enabledPlatformNames={enabledPlatformNames}
+            setEnabledPlatformNames={setEnabledPlatformNames}
+          />
+        </div>
       </div>
-      <PlatformTokenInput
-        fromToData={fromToData}
-        setFromToData={setFromToData}
-        enabledPlatformNames={enabledPlatformNames}
-      />
-      <h2 className="mt-10">Results: {instructionSets.length}</h2>
-      {instructionSets.map((instructions, i) => (
-        <>
-          <h2 key={i}>{i}</h2>
-          <ul key={i} className="steps steps-vertical">
-            {instructions.map((instruction) => (
-              <li
-                key={instruction}
-                data-content={instruction.includes("swap") ? "↺" : "→"}
-                className="step step-primary"
-              >
-                {instruction}
-              </li>
-            ))}
-          </ul>
-        </>
-      ))}
+
+      <Instructions instructionSets={instructionSets} />
     </div>
   );
 };

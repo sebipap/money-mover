@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
-import { getPlatforms, platformTokens } from "./utils/platforms";
-import { FromToData, Platform, Token } from "./utils/types";
+import { getPlatforms, platformTokens } from "../utils/platforms";
+import { FromToData, Platform, Token } from "../utils/types";
+import { Dropdown } from "./Dropdown";
 
 type Props = {
   fromToData: FromToData;
@@ -71,70 +72,51 @@ const PlatformTokenInput = ({
     });
   }, []);
 
-  const handleFromTokenChange = (token: Token) => {
+  const handleFromTokenChange = (token: string) => {
     setFromToData({
       ...fromToData,
-      from: { ...fromToData.from, token },
+      from: { ...fromToData.from, token: token as Token },
     });
   };
-  const handleToTokenChange = (token: Token) => {
+  const handleToTokenChange = (token: string) => {
     setFromToData({
       ...fromToData,
-      to: { ...fromToData.to, token },
+      to: { ...fromToData.to, token: token as Token },
     });
   };
 
   return (
-    <div className="rounded p-5">
-      <div>
-        <select
+    <>
+      <div className="flex-1">
+        <Dropdown
+          options={enabledPlatformNames}
+          onChange={handleFromPlatformChange}
           value={fromPlatformName}
-          onChange={(e) => handleFromPlatformChange(e.target.value)}
-          className="select select-bordered w-full max-w-xs"
-        >
-          {enabledPlatformNames.map((platformName) => (
-            <option key={platformName} value={platformName}>
-              {platformName}
-            </option>
-          ))}
-        </select>
-        <select
+          label="From this platform"
+        />
+        <Dropdown
+          options={fromTokens}
+          onChange={handleFromTokenChange}
           value={fromToken}
-          onChange={(e) => handleFromTokenChange(e.target.value as Token)}
-          className="select select-bordered w-full max-w-xs"
-        >
-          {fromTokens.map((token) => (
-            <option key={token} value={token}>
-              {token}
-            </option>
-          ))}
-        </select>
+          label="Token"
+        />
       </div>
-      <div>
-        <select
+      <div className="flex-1">
+        <Dropdown
+          options={enabledPlatformNames}
+          onChange={handleToPlatformChange}
           value={toPlatformName}
-          onChange={(e) => handleToPlatformChange(e.target.value)}
-          className="select select-bordered w-full max-w-xs"
-        >
-          {enabledPlatformNames.map((platformName) => (
-            <option key={platformName} value={platformName}>
-              {platformName}
-            </option>
-          ))}
-        </select>
-        <select
+          label="To this platform"
+        />
+
+        <Dropdown
+          options={toTokens}
+          onChange={handleToTokenChange}
           value={toToken}
-          onChange={(e) => handleToTokenChange(e.target.value as Token)}
-          className="select select-bordered w-full max-w-xs"
-        >
-          {toTokens.map((token) => (
-            <option key={token} value={token}>
-              {token}
-            </option>
-          ))}
-        </select>
+          label="Token"
+        />
       </div>
-    </div>
+    </>
   );
 };
 
