@@ -3,20 +3,42 @@ import { getPlatforms } from "./platforms";
 
 import { Node, Platform, Token } from "./types";
 
-const graph = new WeightedGraph();
-
 const getNodesFromPlatforms = (enabledPlatforms: Platform[]) => {
-  return enabledPlatforms.flatMap((platform) => {
-    const { inputs, outputs } = platform;
+  console.log({ enabledPlatforms });
 
-    return [...inputs, ...outputs].flatMap(({ network, tokens }) =>
-      tokens.map((token: Token) => ({
-        token: token,
-        network: network,
-        platform: platform,
-      }))
+  return getPlatforms()
+    .flatMap((platform) => {
+      const { inputs, outputs } = platform;
+
+      return [...inputs, ...outputs].flatMap(({ network, tokens }) =>
+        tokens.map((token: Token) => ({
+          token: token,
+          network: network,
+          platform: platform,
+        }))
+      );
+    })
+    .filter((node) =>
+      enabledPlatforms.map((plat) => plat.name).includes(node.platform.name)
     );
-  });
+};
+
+export const getCost = (node1: Node, node2: Node) => {
+  const isTokenSwap = node1.platform.name === node2.platform.name;
+
+  const transferMethod =
+    node1.platform.outputs.find((output) => output.network === node1.network) ||
+    node2.platform.inputs.find((input) => input.network === node2.network);
+
+  if (!transferMethod) {
+    console.log({ node1, node2 });
+  }
+
+  return isTokenSwap ? 0.1 : transferMethod?.fixedCost || 0.2;
+};
+
+const getWeight = (node1: Node, node2: Node) => {
+  return 1 / (getCost(node1, node2) || 0.0001);
 };
 
 const areConnected = (node1: Node, node2: Node) => {
@@ -106,14 +128,17 @@ export const shortestPath = (
 
   const nodes = getNodesFromPlatforms(enabledPlatforms);
 
+  const graph = new WeightedGraph();
+
   for (const node1 of [...nodes, startNode, endNode]) {
     graph.addVertex(nodeToStringifiedNode(node1));
+
     for (const node2 of [...nodes, startNode, endNode]) {
       if (areConnected(node1, node2)) {
         graph.addEdge(
           nodeToStringifiedNode(node1),
           nodeToStringifiedNode(node2),
-          1
+          getWeight(node1, node2)
         );
       }
     }

@@ -1,8 +1,8 @@
 class GraphNode {
-  val: any;
+  val: string;
   priority: number;
 
-  constructor(val: any, priority: number) {
+  constructor(val: string, priority: number) {
     this.val = val;
     this.priority = priority;
   }
@@ -43,6 +43,7 @@ export class PriorityQueue {
     let idx = 0;
     const length = this.values.length;
     const element = this.values[0];
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const leftChildIdx = 2 * idx + 1;
       const rightChildIdx = 2 * idx + 2;
@@ -79,16 +80,16 @@ export class WeightedGraph {
   constructor() {
     this.adjacencyList = {};
   }
-  addVertex(vertex: any) {
+  addVertex(vertex: string) {
     if (!this.adjacencyList[vertex]) this.adjacencyList[vertex] = [];
   }
-  addEdge(vertex1: any, vertex2: any, weight: number) {
+  addEdge(vertex1: string, vertex2: string, weight: number) {
     (this.adjacencyList[vertex1] || []).push({ node: vertex2, weight });
     // (this.adjacencyList[vertex2] || []).push({ node: vertex1, weight });
   }
-  Dijkstra(start: any, finish: any) {
+  Dijkstra(start: string, finish: string) {
     const nodes = new PriorityQueue();
-    const distances: Record<any, number> = {};
+    const distances: Record<string, number> = {};
     const previous: Record<any, any> = {};
     const path = []; //to return at end
     let smallest;

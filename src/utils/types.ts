@@ -28,12 +28,13 @@ export type Network =
   | "lemon"
   | "paypal"
   | "wise"
-  | "deelCoinbase"
+  | "deel extraction"
   | "us bank transfer";
 
 export type TransferMethod = {
   network: Network;
   tokens: Token[];
+  fixedCost: number;
 };
 
 export type Conversion = {

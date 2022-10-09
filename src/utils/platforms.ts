@@ -15,21 +15,25 @@ const arsUsdSolidario: Conversion = {
 const pesosTransactionArgentinaBankNetwork: TransferMethod = {
   network: "CBU",
   tokens: ["ARS"],
+  fixedCost: 0,
 };
 
 const dollarTransactionArgentinaBankNetwork: TransferMethod = {
   network: "CBU",
   tokens: ["ARS"],
+  fixedCost: 0,
 };
 
 const pesosTransactionArgentinaCash: TransferMethod = {
   network: "CASH",
   tokens: ["ARS"],
+  fixedCost: 0,
 };
 
 const dollarTransactionArgentinaCash: TransferMethod = {
   network: "CASH",
   tokens: ["ARS"],
+  fixedCost: 0,
 };
 
 const argentineBankStandardTransactionMethods: TransferMethod[] = [
@@ -73,31 +77,37 @@ const usdtArs: Conversion = {
 const btcBtcMainnet: TransferMethod = {
   network: "BTC mainnet",
   tokens: ["BTC"],
+  fixedCost: 10,
 };
 
 const btcBtcLn: TransferMethod = {
   network: "BTC LN",
   tokens: ["BTC"],
+  fixedCost: 0.5,
 };
 
 const lemonErcMethod: TransferMethod = {
   network: "ERC",
   tokens: ["USDT", "USDC", "ETH", "BTC", "USDC"],
+  fixedCost: 3,
 };
 
 const lemonBSCMethod: TransferMethod = {
   network: "BSC",
   tokens: ["USDT", "BUSD", "BNB", "BTC"],
+  fixedCost: 1.2,
 };
 
 const lemonTag: TransferMethod = {
   network: "lemon",
   tokens: ["USDT", "USDC", "ETH", "BTC", "BUSD", "BNB"],
+  fixedCost: 0,
 };
 
 const deelPaypalTransferMethod: TransferMethod = {
   network: "paypal",
   tokens: ["USD"],
+  fixedCost: 15,
 };
 
 const paypal: Platform = {
@@ -127,6 +137,7 @@ const lemonCash: Platform = {
 const deelWiseTransferMethod: TransferMethod = {
   network: "wise",
   tokens: ["USD", "EUR", "GBP"],
+  fixedCost: 0,
 };
 
 const usdEur: Conversion = {
@@ -146,6 +157,7 @@ const fiatConversions: Conversion[] = [usdEur, eurUsd];
 const usBankTransfer: TransferMethod = {
   network: "us bank transfer",
   tokens: ["USD"],
+  fixedCost: 5.7,
 };
 
 const wise: Platform = {
@@ -155,26 +167,41 @@ const wise: Platform = {
   outputs: [deelWiseTransferMethod, usBankTransfer],
 };
 
-const deelCoinbaseTransfer: TransferMethod = {
-  network: "deelCoinbase",
+const deelExtraction: TransferMethod = {
+  network: "deel extraction",
   tokens: ["BTC", "DASH", "ETH", "SOL", "USDC"],
+  fixedCost: 20,
 };
 
 const coinbaseErcTransferMethods: TransferMethod = {
   network: "ERC",
   tokens: ["BTC", "DASH", "ETH", "SOL", "USDC"],
+  fixedCost: 2,
 };
 
 const coinbase: Platform = {
   name: "Coinbase",
   conversions: [usdtBtc, btcUsdt],
+  inputs: [btcBtcMainnet, btcBtcLn, deelExtraction, coinbaseErcTransferMethods],
+  outputs: [btcBtcMainnet, btcBtcLn, coinbaseErcTransferMethods],
+};
+
+const binance: Platform = {
+  name: "Binance",
+  conversions: [usdtBtc, btcUsdt],
   inputs: [
     btcBtcMainnet,
     btcBtcLn,
-    deelCoinbaseTransfer,
+    deelExtraction,
     coinbaseErcTransferMethods,
+    usBankTransfer,
   ],
-  outputs: [btcBtcMainnet, btcBtcLn, coinbaseErcTransferMethods],
+  outputs: [
+    btcBtcMainnet,
+    btcBtcLn,
+    coinbaseErcTransferMethods,
+    usBankTransfer,
+  ],
 };
 
 const usdUsdc: Conversion = {
@@ -187,11 +214,7 @@ const deel: Platform = {
   name: "Deel",
   conversions: [usdUsdc],
   inputs: [],
-  outputs: [
-    deelPaypalTransferMethod,
-    deelWiseTransferMethod,
-    deelCoinbaseTransfer,
-  ],
+  outputs: [deelPaypalTransferMethod, deelWiseTransferMethod, deelExtraction],
 };
 
 export const platformTokens = ({ conversions, inputs, outputs }: Platform) => {
@@ -221,6 +244,7 @@ export const getPlatforms = (): Platform[] =>
       lemonCash,
       wise,
       coinbase,
+      binance,
       deel,
       bankOfAmerica,
     ])

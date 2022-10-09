@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PlatformTokenInput from "./PlatformTokenInput";
-import { getIntructions } from "./utils";
+import { allInstructionsSets, getIntructions } from "./utils";
 import { FromToData } from "./utils/types";
 
 import "./App.css";
@@ -29,7 +29,7 @@ const App = () => {
     return enabledPlatformNames.includes(platform.name);
   });
 
-  const instructions = getIntructions(fromToData, enabledPlatforms);
+  const instructionSets = allInstructionsSets(fromToData, enabledPlatforms);
 
   return (
     <div className="p-10">
@@ -70,17 +70,23 @@ const App = () => {
         setFromToData={setFromToData}
         enabledPlatformNames={enabledPlatformNames}
       />
-      <ul className="steps steps-vertical">
-        {instructions.map((instruction) => (
-          <li
-            key={instruction}
-            data-content={instruction.includes("swap") ? "↺" : "→"}
-            className="step step-primary"
-          >
-            {instruction}
-          </li>
-        ))}
-      </ul>
+      <h2 className="mt-10">Results: {instructionSets.length}</h2>
+      {instructionSets.map((instructions, i) => (
+        <>
+          <h2 key={i}>{i}</h2>
+          <ul key={i} className="steps steps-vertical">
+            {instructions.map((instruction) => (
+              <li
+                key={instruction}
+                data-content={instruction.includes("swap") ? "↺" : "→"}
+                className="step step-primary"
+              >
+                {instruction}
+              </li>
+            ))}
+          </ul>
+        </>
+      ))}
     </div>
   );
 };
