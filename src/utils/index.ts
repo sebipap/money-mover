@@ -13,10 +13,9 @@ export const getIntructions = (
   // 1. in the same platform, swap tokens
   // 2. with the same token and network, send to different platform
 
-  let instructions = [];
+  const instructions = [];
 
   if (transitions) {
-    let i = 1;
     for (const [fromNode, toNode] of transitions) {
       if (!toNode) {
         continue;
@@ -39,7 +38,6 @@ export const getIntructions = (
           `In ${fromNode.platform.name}, send ${fromNode.token} through the ${fromNode.network} network to ${toNode.platform.name}`
         );
       }
-      i++;
     }
   }
   return instructions;

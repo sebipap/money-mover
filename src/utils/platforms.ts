@@ -213,12 +213,15 @@ const bankOfAmerica: Platform = {
   outputs: [usBankTransfer],
 };
 
-export const platforms: Platform[] = [
-  argentineBank,
-  paypal,
-  lemonCash,
-  wise,
-  coinbase,
-  deel,
-  bankOfAmerica,
-];
+export const getPlatforms = (): Platform[] =>
+  JSON.parse(
+    JSON.stringify([
+      argentineBank,
+      paypal,
+      lemonCash,
+      wise,
+      coinbase,
+      deel,
+      bankOfAmerica,
+    ])
+  );

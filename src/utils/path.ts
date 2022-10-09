@@ -1,12 +1,12 @@
 import { WeightedGraph } from "./graph";
-import { platforms } from "./platforms";
+import { getPlatforms } from "./platforms";
 
 import { Node, Platform, Token } from "./types";
 
 const graph = new WeightedGraph();
 
-const getNodesFromPlatforms = (platforms: Platform[]) => {
-  return platforms.flatMap((platform) => {
+const getNodesFromPlatforms = (enabledPlatforms: Platform[]) => {
+  return enabledPlatforms.flatMap((platform) => {
     const { inputs, outputs } = platform;
 
     return [...inputs, ...outputs].flatMap(({ network, tokens }) =>
@@ -57,7 +57,9 @@ const nodeToStringifiedNode = ({ network, platform, token }: Node) =>
 const stringifiedNodeToNode = (stringifiedNode: string) => {
   const [network, platformName, token] = stringifiedNode.split(",");
 
-  const platform = platforms.find((platform) => (platform.name = platformName));
+  const platform = getPlatforms().find(
+    (platform) => (platform.name = platformName)
+  );
 
   return {
     network,
@@ -104,8 +106,6 @@ export const shortestPath = (
 
   const nodes = getNodesFromPlatforms(enabledPlatforms);
 
-  console.log(new Set([...nodes.map((node) => node.platform.name)]));
-
   for (const node1 of [...nodes, startNode, endNode]) {
     graph.addVertex(nodeToStringifiedNode(node1));
     for (const node2 of [...nodes, startNode, endNode]) {
@@ -123,8 +123,6 @@ export const shortestPath = (
     startNodeString,
     endNodeString
   );
-
-  console.log(stringifiedNodePath);
 
   return stringifiedNodePath.map((stringifiedNode: string) =>
     stringifiedNodeToNode(stringifiedNode)

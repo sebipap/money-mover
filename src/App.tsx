@@ -1,29 +1,31 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import PlatformTokenInput from "./PlatformTokenInput";
 import { getIntructions } from "./utils";
-import { FromToData, Platform } from "./utils/types";
+import { FromToData } from "./utils/types";
 
 import "./App.css";
-import { platforms } from "./utils/platforms";
+import { getPlatforms } from "./utils/platforms";
 
 const App = () => {
-  const [fromToData, setFromToData] = useState<FromToData>({
+  const defaultFromToData: FromToData = {
     from: {
       platformName: "Deel",
       token: "USD",
     },
     to: {
-      platformName: "Banco Galicia",
+      platformName: "Argentina Bank",
       token: "ARS",
     },
-  });
+  };
 
-  const [enabledPlatformNames, setEnabledPlatformNames] = useState<string[]>(
-    platforms.map((platform) => platform.name)
-  );
+  const [fromToData, setFromToData] = useState<FromToData>(defaultFromToData);
 
-  const enabledPlatforms = platforms.filter((platform, i) => {
-    console.log(platform);
+  const allPlatformNames = getPlatforms().map((platform) => platform.name);
+
+  const [enabledPlatformNames, setEnabledPlatformNames] =
+    useState<string[]>(allPlatformNames);
+
+  const enabledPlatforms = getPlatforms().filter((platform) => {
     return enabledPlatformNames.includes(platform.name);
   });
 
@@ -32,7 +34,7 @@ const App = () => {
   return (
     <div className="p-10">
       <div className={"form-control w-96 border p-5 rounded border-slate-50"}>
-        {platforms.map((platform, index) => {
+        {getPlatforms().map((platform, index) => {
           const checked = enabledPlatformNames.includes(platform.name);
 
           return (
@@ -42,19 +44,19 @@ const App = () => {
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={(e) => {
+                  onChange={() => {
                     if (checked) {
                       setEnabledPlatformNames((prevEnabledPlatforms) =>
                         prevEnabledPlatforms.filter(
                           (platformName) => platformName !== platform.name
                         )
                       );
-                      return;
+                    } else {
+                      setEnabledPlatformNames((prevEnabledPlatforms) => [
+                        ...prevEnabledPlatforms,
+                        platform.name,
+                      ]);
                     }
-                    setEnabledPlatformNames((prevEnabledPlatforms) => [
-                      ...prevEnabledPlatforms,
-                      platform.name,
-                    ]);
                   }}
                   className="toggle toggle-accent"
                 />
@@ -64,11 +66,14 @@ const App = () => {
         })}
       </div>
       <PlatformTokenInput
-        {...{ fromToData, setFromToData, enabledPlatforms }}
+        fromToData={fromToData}
+        setFromToData={setFromToData}
+        enabledPlatformNames={enabledPlatformNames}
       />
       <ul className="steps steps-vertical">
         {instructions.map((instruction) => (
           <li
+            key={instruction}
             data-content={instruction.includes("swap") ? "↺" : "→"}
             className="step step-primary"
           >
@@ -76,7 +81,6 @@ const App = () => {
           </li>
         ))}
       </ul>
-      {JSON.stringify(enabledPlatforms.map((ep) => ep.name))}
     </div>
   );
 };

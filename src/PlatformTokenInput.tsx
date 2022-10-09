@@ -1,23 +1,26 @@
-import { platformTokens } from "./utils/platforms";
+import React, { useCallback } from "react";
+import { getPlatforms, platformTokens } from "./utils/platforms";
 import { FromToData, Platform, Token } from "./utils/types";
 
 type Props = {
   fromToData: FromToData;
   setFromToData: (fromToData: FromToData) => void;
-  enabledPlatforms: Platform[];
+  enabledPlatformNames: string[];
 };
 
 const PlatformTokenInput = ({
   fromToData,
   setFromToData,
-  enabledPlatforms,
+  enabledPlatformNames,
 }: Props) => {
-  const platformNames = enabledPlatforms.map((platform) => platform.name);
-
   const {
     from: { platformName: fromPlatformName, token: fromToken },
     to: { platformName: toPlatformName, token: toToken },
   } = fromToData;
+
+  const enabledPlatforms = getPlatforms().filter((platform) =>
+    enabledPlatformNames.includes(platform.name)
+  );
 
   const fromPlatform: Platform | undefined = enabledPlatforms.find(
     (platform) => platform.name === fromPlatformName
@@ -30,39 +33,44 @@ const PlatformTokenInput = ({
   const fromTokens = fromPlatform ? platformTokens(fromPlatform) : [];
   const toTokens = toPlatform ? platformTokens(toPlatform) : [];
 
-  const handleFromPlatformChange = (platformName: string) => {
+  const handleFromPlatformChange = useCallback((platformName: string) => {
     const platform: Platform | undefined = enabledPlatforms.find(
       (platform) => platform.name === platformName
     );
 
     if (!platform) return;
 
+    const platformAvailableTokens = platformTokens(platform);
+
     const newToken = platformTokens(platform).includes(fromToken)
       ? fromToken
-      : platformTokens(platform)[0];
+      : platformAvailableTokens[0];
 
     setFromToData({
       ...fromToData,
       from: { token: newToken, platformName },
     });
-  };
+  }, []);
 
-  const handleToPlatformChange = (platformName: string) => {
+  const handleToPlatformChange = useCallback((platformName: string) => {
     const platform: Platform | undefined = enabledPlatforms.find(
       (platform) => platform.name === platformName
     );
 
     if (!platform) return;
 
-    const newToken = platformTokens(platform).includes(fromToken)
+    const platformAvailableTokens = platformTokens(platform);
+
+    const newToken = platformAvailableTokens.includes(fromToken)
       ? fromToken
-      : platformTokens(platform)[0];
+      : platformAvailableTokens[0];
 
     setFromToData({
       ...fromToData,
       to: { token: newToken, platformName },
     });
-  };
+  }, []);
+
   const handleFromTokenChange = (token: Token) => {
     setFromToData({
       ...fromToData,
@@ -84,7 +92,7 @@ const PlatformTokenInput = ({
           onChange={(e) => handleFromPlatformChange(e.target.value)}
           className="select select-bordered w-full max-w-xs"
         >
-          {platformNames.map((platformName) => (
+          {enabledPlatformNames.map((platformName) => (
             <option key={platformName} value={platformName}>
               {platformName}
             </option>
@@ -108,7 +116,7 @@ const PlatformTokenInput = ({
           onChange={(e) => handleToPlatformChange(e.target.value)}
           className="select select-bordered w-full max-w-xs"
         >
-          {platformNames.map((platformName) => (
+          {enabledPlatformNames.map((platformName) => (
             <option key={platformName} value={platformName}>
               {platformName}
             </option>
